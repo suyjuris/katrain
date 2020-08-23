@@ -419,6 +419,13 @@ class BadukPanWidget(Widget):
             # hints or PV
             if katrain.analysis_controls.hints.active and not game_ended:
                 hint_moves = current_node.candidate_moves
+
+                pass_value = None
+                for move_dict in hint_moves:
+                    if move_dict["move"] == "pass":
+                        pass_value = move_dict["pointsLost"]
+                        break
+                
                 for i, move_dict in enumerate(hint_moves):
                     move = Move.from_gtp(move_dict["move"])
                     if move.coords is not None:
@@ -429,11 +436,16 @@ class BadukPanWidget(Widget):
                             self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
                         else:
                             katrain.log(f"PV missing for move_dict {move_dict}", OUTPUT_DEBUG)
+                        position = (self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]])
                         draw_circle(
-                            (self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
+                            position,
                             col=[*self.eval_color(move_dict["pointsLost"])[:3], alpha],
                             r=self.stone_size * scale,
                         )
+                        if pass_value:
+                            Color(0, 0, 0, 1);
+                            value = pass_value - move_dict["pointsLost"]
+                            draw_text(pos=position, text=f'{value:.1f}', font_size=self.grid_size / 2, font_name="Roboto")
                         if i == 0:
                             Color(*TOP_MOVE_BORDER_COLOR)
                             Line(

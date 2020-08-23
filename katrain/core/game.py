@@ -355,6 +355,13 @@ class Game:
             visits = engine.config["fast_visits"]
             self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits), STATUS_ANALYSIS)
             priority = -1_000_000_000
+        elif mode == "pass":
+            board_size_x, board_size_y = self.board_size
+            analyze_moves = [Move(coords=None, player=cn.next_player)]
+            
+            visits = 4 * engine.config["fast_visits"]
+            self.katrain.controls.set_status(i18n._("pass analysis").format(visits=visits), STATUS_ANALYSIS)
+            priority = -1_000_000_000
         elif mode == "equalize":
             if not cn.analysis_ready:
                 self.katrain.controls.set_status(i18n._("wait-before-equalize"), STATUS_INFO, self.current_node)
